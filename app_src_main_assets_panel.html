@@ -1,0 +1,101 @@
+
+
+<div class="panel" id="panel">
+  <div class="head">
+    <div class="grip"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="ttl">FLUORITE<small>aim · visual · cfg</small></div>
+    <button class="mini-btn" id="mini" aria-label="Minimizar">—</button>
+    <button class="mini-btn x" aria-label="Cerrar">✕</button>
+  </div>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-tab="aim">Aim</button>
+    <button class="tab" data-tab="vis">Visual</button>
+    <button class="tab" data-tab="cfg">Cfg</button>
+  </div>
+
+  <div class="body">
+    
+    <section class="sec active" data-sec="aim">
+      <h3>Aim · todo rojo</h3>
+      <p class="hint">Retículo rojo de alta visibilidad. Precisión suave para microajustes.</p>
+      <div class="stage"><div class="ch" id="ch"></div></div>
+      <div class="chips" id="styles">
+        <button class="chip active" data-style="cross">Cruz</button>
+        <button class="chip" data-style="dot">Punto</button>
+        <button class="chip" data-style="circle">Círculo</button>
+        <button class="chip" data-style="t">T</button>
+        <button class="chip" data-style="chev">Chevron</button>
+        <button class="chip" data-style="none">Oculto</button>
+      </div>
+      <div class="pal" id="palAim"></div>
+      <div class="sld"><div class="top"><span>Tamaño</span><b id="vSize">26</b></div><input type="range" min="6" max="60" value="26" data-ch="size"></div>
+      <div class="sld"><div class="top"><span>Separación</span><b id="vGap">8</b></div><input type="range" min="0" max="30" value="8" data-ch="gap"></div>
+      <div class="sld"><div class="top"><span>Grosor</span><b id="vThick">2</b></div><input type="range" min="1" max="8" value="2" data-ch="thick"></div>
+      <div class="sld"><div class="top"><span>Brillo</span><b id="vGlow">14</b></div><input type="range" min="0" max="40" value="14" data-ch="glow"></div>
+      <div class="sld"><div class="top"><span>Opacidad</span><b id="vOp">100</b></div><input type="range" min="20" max="100" value="100" data-ch="op"></div>
+      <div class="sld"><div class="top"><span>Precisión suave</span><b id="vSmooth">55</b></div><input type="range" min="0" max="100" value="55" data-smooth=""></div>
+      <div class="row"><label>Punto central</label><button class="sw on" data-toggle="aim.dot"></button></div>
+      <div class="row"><label>Modo disimulado</label><button class="sw" data-toggle="aim.stealth"></button></div>
+      <div class="chips" id="presets">
+        <button class="chip" data-preset="suave">Suave</button>
+        <button class="chip" data-preset="comp">Competitivo</button>
+        <button class="chip" data-preset="sigilo">Sigilo</button>
+        <button class="chip" data-preset="preciso">Preciso</button>
+      </div>
+    </section>
+
+    
+    <section class="sec" data-sec="vis">
+      <h3>Visual</h3>
+      <p class="hint">Holograma y ficha de arma. Arrastra sobre la tarjeta para inclinarla.</p>
+      <div class="chips" id="models">
+        <button class="chip active" data-model="ar">Fusil</button>
+        <button class="chip" data-model="smg">Subfusil</button>
+        <button class="chip" data-model="sniper">Sniper</button>
+        <button class="chip" data-model="pistol">Pistola</button>
+      </div>
+      <div class="holo" id="holo">
+        <div class="hcard" id="hcard">
+          <div class="nm" id="hName">AR-01</div><div class="tg">HOLO</div>
+          <div class="wp"></div><div class="spin"></div><div class="plinth"></div>
+        </div>
+      </div>
+      <div class="stat"><span><b>Daño</b><b id="pDmg">—</b></span><div class="bar"><i id="bDmg"></i></div></div>
+      <div class="stat"><span><b>Cadencia</b><b id="pRate">—</b></span><div class="bar"><i id="bRate"></i></div></div>
+      <div class="stat"><span><b>Alcance</b><b id="pRng">—</b></span><div class="bar"><i id="bRng"></i></div></div>
+      <div class="sld"><div class="top"><span>Rotación</span><b id="vSpd">8</b></div><input type="range" min="1" max="20" value="8" data-holo="speed"></div>
+      <div class="row"><label>Proyección</label><button class="sw on" data-toggle="holo.on"></button></div>
+      <div class="row"><label>Efectos de scanline</label><button class="sw on" data-toggle="fx.scan"></button></div>
+      <div class="row"><label>Partículas</label><button class="sw on" data-toggle="fx.parts"></button></div>
+      <div class="row"><label>Glow de interfaz</label><button class="sw on" data-toggle="fx.glow"></button></div>
+    </section>
+
+    
+    <section class="sec" data-sec="cfg">
+      <h3>Configuración</h3>
+      <p class="hint">Tema, tamaño del panel y guardado local.</p>
+      <div class="pal" id="palAcc"></div>
+      <div class="sld"><div class="top"><span>Ancho del panel</span><b id="vW">392</b></div><input type="range" min="300" max="470" value="392" data-cfg="w"></div>
+      <div class="chips" id="fsz">
+        <button class="chip" data-fs="0.85">Texto S</button>
+        <button class="chip active" data-fs="1">Texto M</button>
+        <button class="chip" data-fs="1.15">Texto L</button>
+      </div>
+      <div class="row"><label>Arranque minimizado</label><button class="sw" data-toggle="cfg.startMini"></button></div>
+      <div class="row"><label>Guardado automático</label><button class="sw on" data-toggle="cfg.autosave"></button></div>
+      <div class="row"><label>Versión</label><span class="val">1.0.0</span></div>
+    </section>
+  </div>
+
+  <div class="foot">
+    <button class="btn" id="saveBtn">Guardar config</button>
+    <button class="btn ico" id="expBtn" title="Copiar">⤓</button>
+    <button class="btn red ico" id="resBtn" title="Restaurar">⟲</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+
+

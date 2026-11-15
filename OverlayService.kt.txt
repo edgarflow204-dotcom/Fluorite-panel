@@ -1,0 +1,122 @@
+package ai.venice.fluorite
+
+import android.app.*
+import android.content.Context
+import android.content.Intent
+import android.graphics.Color
+import android.graphics.PixelFormat
+import android.os.Build
+import android.os.IBinder
+import android.view.Gravity
+import android.view.WindowManager
+import android.webkit.JavascriptInterface
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import kotlin.math.roundToInt
+
+class OverlayService : Service() {
+
+    private lateinit var wm: WindowManager
+    private var web: WebView? = null
+    private lateinit var lp: WindowManager.LayoutParams
+
+    private val prefs by lazy { getSharedPreferences("fluorite", Context.MODE_PRIVATE) }
+
+    override fun onBind(i: Intent?): IBinder? = null
+
+    override fun onCreate() {
+        super.onCreate()
+        startForeground(1, notification())
+        wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+        val density = resources.displayMetrics.density
+        val widthPx = (prefs.getInt("w", 392) * density).roundToInt()
+
+        lp = WindowManager.LayoutParams(
+            widthPx,
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            else WindowManager.LayoutParams.TYPE_PHONE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            gravity = Gravity.TOP or Gravity.START
+            x = (8 * density).roundToInt()
+            y = (90 * density).roundToInt()
+        }
+
+        web = WebView(this).apply {
+            setBackgroundColor(Color.TRANSPARENT)
+            settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
+            settings.allowFileAccess = true
+            webViewClient = WebViewClient()
+            addJavascriptInterface(Bridge(), "Android")
+            loadUrl("file:///android_asset/panel.html")
+        }
+
+        wm.addView(web, lp)
+    }
+
+    inner class Bridge {
+        @JavascriptInterface
+        fun drag(dx: Float, dy: Float) {
+            val d = resources.displayMetrics.density
+            lp.x += (dx * 1f).roundToInt()
+            lp.y += (dy * 1f).roundToInt()
+            val maxX = resources.displayMetrics.widthPixels - lp.width
+            lp.x = lp.x.coerceIn(0, maxX.coerceAtLeast(0))
+            lp.y = lp.y.coerceAtLeast(0)
+            web?.let { wm.updateViewLayout(it, lp) }
+        }
+
+        @JavascriptInterface
+        fun setWidth(px: Int) {
+            lp.width = (px * resources.displayMetrics.density).roundToInt()
+            prefs.edit().putInt("w", px).apply()
+            web?.let { wm.updateViewLayout(it, lp) }
+        }
+
+        @JavascriptInterface
+        fun saveState(json: String) {
+            prefs.edit().putString("state", json).apply()
+        }
+
+        @JavascriptInterface
+        fun ready() {}
+
+        @JavascriptInterface
+        fun close() {
+            stopSelf()
+        }
+    }
+
+    private fun notification(): Notification {
+        val id = "fluorite"
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val ch = NotificationChannel(id, "Panel", NotificationManager.IMPORTANCE_LOW)
+            getSystemService(NotificationManager::class.java).createNotificationChannel(ch)
+        }
+        val open = PendingIntent.getActivity(
+            this, 0, Intent(this, MainActivity::class.java),
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        return Notification.Builder(this, id)
+            .setContentTitle("Fluorite Panel activo")
+            .setContentText("Toca para volver a la app")
+            .setSmallIcon(android.R.drawable.ic_menu_crop)
+            .setContentIntent(open)
+            .setOngoing(true)
+            .build()
+    }
+
+    override fun onDestroy() {
+        web?.let { runCatching { wm.removeView(it) } }
+        web?.destroy()
+        web = null
+        super.onDestroy()
+    }
+}

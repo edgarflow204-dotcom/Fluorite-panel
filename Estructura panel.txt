@@ -1,0 +1,12 @@
+fluorite-panel/
+├─ settings.gradle.kts
+├─ build.gradle.kts
+├─ gradle.properties
+├─ .github/workflows/build.yml
+└─ app/
+   ├─ build.gradle.kts
+   └─ src/main/
+      ├─ AndroidManifest.xml
+      ├─ kotlin/ai/venice/fluorite/MainActivity.kt
+      ├─ kotlin/ai/venice/fluorite/OverlayService.kt
+      └─ assets/panel.html

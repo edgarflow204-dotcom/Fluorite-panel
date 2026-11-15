@@ -1,0 +1,76 @@
+package ai.venice.fluorite
+
+import android.app.Activity
+import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.provider.Settings
+import android.view.Gravity
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+
+class MainActivity : Activity() {
+
+    override fun onCreate(s: Bundle?) {
+        super.onCreate(s)
+
+        val root = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.BLACK)
+            gravity = Gravity.CENTER
+            setPadding(48, 48, 48, 48)
+        }
+
+        val title = TextView(this).apply {
+            text = "FLUORITE PANEL"
+            setTextColor(Color.parseColor("#C084FC"))
+            textSize = 22f
+            letterSpacing = 0.25f
+            gravity = Gravity.CENTER
+        }
+
+        val info = TextView(this).apply {
+            text = "\n1. Concede el permiso de superposición.\n2. Inicia el panel.\n3. Vuelve al juego: el panel flota encima."
+            setTextColor(Color.parseColor("#9F8FB8"))
+            textSize = 13f
+            gravity = Gravity.CENTER
+        }
+
+        fun btn(label: String, color: String, action: () -> Unit) = Button(this).apply {
+            text = label
+            setTextColor(Color.parseColor(color))
+            setBackgroundColor(Color.parseColor("#120A1C"))
+            setOnClickListener { action() }
+        }
+
+        root.addView(title)
+        root.addView(info)
+        root.addView(btn("CONCEDER PERMISO", "#C084FC") { askOverlay() })
+        root.addView(btn("INICIAR PANEL", "#C084FC") { startOverlay() })
+        root.addView(btn("DETENER PANEL", "#FF2B3D") {
+            stopService(Intent(this, OverlayService::class.java))
+        })
+
+        setContentView(root)
+    }
+
+    private fun askOverlay() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            startActivity(
+                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+            )
+        }
+    }
+
+    private fun startOverlay() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
+            askOverlay()
+            return
+        }
+        startForegroundService(Intent(this, OverlayService::class.java))
+        moveTaskToBack(true)
+    }
+}
